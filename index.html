@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Dokumen Proyek - Taufiq Komara</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <style>
+        :root {
+            --brand: #f04b16;
+            --brand-dark: #c83510;
+            --ink: #111113;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                linear-gradient(135deg, rgba(240, 75, 22, 0.05), transparent 32%),
+                linear-gradient(180deg, #fafafa 0%, #f4f4f5 100%);
+        }
+
+        .grid-texture {
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .row-baru {
+            animation: fadeInHighlight 1.4s ease-out;
+        }
+
+        .workflow-node {
+            animation: nodePulse 2.8s ease-in-out infinite;
+        }
+
+        .workflow-node:nth-child(2) {
+            animation-delay: 0.35s;
+        }
+
+        .workflow-node:nth-child(3) {
+            animation-delay: 0.7s;
+        }
+
+        .workflow-line {
+            background-size: 220% 100%;
+            animation: lineMove 2.4s linear infinite;
+        }
+
+        @keyframes fadeInHighlight {
+            0% {
+                background-color: rgba(240, 75, 22, 0.16);
+                transform: translateY(-4px);
+                opacity: 0;
+            }
+            100% {
+                background-color: transparent;
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes nodePulse {
+            0%, 100% {
+                transform: translateY(0);
+                box-shadow: 0 0 0 0 rgba(240, 75, 22, 0);
+            }
+            50% {
+                transform: translateY(-5px);
+                box-shadow: 0 16px 30px -18px rgba(240, 75, 22, 0.85);
+            }
+        }
+
+        @keyframes lineMove {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 220% 50%;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans text-zinc-900 antialiased">
+    <div id="login-page" class="fixed inset-0 z-50 grid bg-zinc-950 lg:grid-cols-[1.05fr_0.95fr]">
+        <section class="grid-texture hidden min-h-screen overflow-hidden border-r border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(240,75,22,0.18),transparent_36%),linear-gradient(135deg,#171717_0%,#050506_100%)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
+            <div class="flex items-center gap-3">
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-600 text-sm font-black shadow-lg shadow-orange-950/40">TK</div>
+                <div>
+                    <p class="text-sm font-bold tracking-wide">Manajemen Dokumen Proyek</p>
+                    <p class="text-xs font-medium text-zinc-400">Tema Persija</p>
+                </div>
+            </div>
+
+            <div class="max-w-xl">
+                <p class="mb-4 inline-flex rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-xs font-semibold text-orange-300">Dashboard Administrasi Proyek</p>
+                <h1 class="text-5xl font-black leading-tight tracking-tight">Kelola data proyek, lampiran, dan pengesahan dalam satu halaman.</h1>
+                <p class="mt-5 max-w-lg text-sm leading-6 text-zinc-300">Antarmuka dibuat ringkas untuk kebutuhan tugas pemrograman web: autentikasi, CRUD, upload banyak file, pencarian, ekspor data, modal, tanda tangan digital, animasi, dan audio.</p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+                <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                    <p class="text-2xl font-black">8</p>
+                    <p class="mt-1 text-xs text-zinc-400">Modul fitur</p>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                    <p class="text-2xl font-black">CRUD</p>
+                    <p class="mt-1 text-xs text-zinc-400">Data proyek</p>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                    <p class="text-2xl font-black">Canvas</p>
+                    <p class="mt-1 text-xs text-zinc-400">Signature pad</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="flex min-h-screen items-center justify-center px-5 py-10">
+            <div class="w-full max-w-md">
+                <div class="mb-8 text-center lg:hidden">
+                    <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-orange-600 text-sm font-black text-white">TK</div>
+                    <h1 class="text-xl font-bold text-white">Manajemen Dokumen Proyek</h1>
+                    <p class="mt-1 text-sm text-zinc-400">Tema Persija</p>
+                </div>
+
+                <div class="rounded-3xl border border-white/10 bg-white/[0.06] p-7 shadow-2xl shadow-black/40 backdrop-blur">
+                    <div class="mb-7">
+                        <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-orange-500/20 bg-orange-500/10 text-orange-400">
+                            <i class="bi bi-shield-lock-fill text-2xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white">Masuk ke Sistem</h2>
+                        <p class="mt-1 text-sm text-zinc-400">Gunakan akun admin untuk mengakses dashboard.</p>
+                    </div>
+
+                    <form class="space-y-4" onsubmit="handleLogin(event)">
+                        <div>
+                            <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-400">Email</label>
+                            <div class="flex items-center gap-3 rounded-2xl border border-white/10 bg-zinc-950/70 px-4 py-3 transition focus-within:border-orange-500/70 focus-within:ring-4 focus-within:ring-orange-500/10">
+                                <i class="bi bi-envelope text-zinc-500"></i>
+                                <input id="login-email" type="text" required value="taufiq.komara@persija.id" class="w-full bg-transparent text-sm text-white outline-none placeholder:text-zinc-600">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-400">Password</label>
+                            <div class="flex items-center gap-3 rounded-2xl border border-white/10 bg-zinc-950/70 px-4 py-3 focus-within:border-orange-500/70 focus-within:ring-4 focus-within:ring-orange-500/10">
+                                <i class="bi bi-key text-zinc-500"></i>
+                                <input id="login-password" type="password" required value="admin123" class="w-full bg-transparent text-sm text-white outline-none placeholder:text-zinc-600">
+                            </div>
+                        </div>
+                        <p id="login-message" class="hidden rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200"></p>
+                        <button id="login-button" type="submit" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-orange-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-orange-950/40 transition hover:bg-orange-700">
+                            <span id="login-button-text">Masuk</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="main-dashboard" class="hidden min-h-screen bg-zinc-100 md:flex">
+        <aside class="fixed inset-y-0 left-0 z-30 hidden w-72 flex-col border-r border-white/10 bg-zinc-950 text-white md:flex">
+            <div class="grid-texture flex h-full flex-col">
+                <div class="border-b border-white/10 p-6">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-600 text-sm font-black shadow-lg shadow-orange-950/40">TK</div>
+                        <div>
+                            <p class="text-sm font-bold tracking-wide">Proyek S4</p>
+                            <p class="text-xs font-medium text-zinc-400">Taufiq Komara</p>
+                        </div>
+                    </div>
+                </div>
+
+                <nav class="flex-1 space-y-6 p-4">
+                    <div>
+                        <p class="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">Menu Utama</p>
+                        <a href="#" class="flex items-center gap-3 rounded-2xl bg-orange-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-950/30">
+                            <i class="bi bi-grid-1x2-fill"></i>
+                            Dashboard
+                        </a>
+                    </div>
+
+                    <div>
+                        <p class="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">Fitur Sistem</p>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-3 rounded-xl px-3 py-2 text-xs text-zinc-300"><i class="bi bi-check2-circle text-orange-500"></i> Login bertema Persija</div>
+                            <div class="flex items-center gap-3 rounded-xl px-3 py-2 text-xs text-zinc-300"><i class="bi bi-check2-circle text-orange-500"></i> CRUD data proyek</div>
+                            <div class="flex items-center gap-3 rounded-xl px-3 py-2 text-xs text-zinc-300"><i class="bi bi-check2-circle text-orange-500"></i> Multiple file upload</div>
+                            <div class="flex items-center gap-3 rounded-xl px-3 py-2 text-xs text-zinc-300"><i class="bi bi-check2-circle text-orange-500"></i> Export Excel dan PDF</div>
+                            <div class="flex items-center gap-3 rounded-xl px-3 py-2 text-xs text-zinc-300"><i class="bi bi-check2-circle text-orange-500"></i> Canvas signature pad</div>
+                            <div class="flex items-center gap-3 rounded-xl px-3 py-2 text-xs text-zinc-300"><i class="bi bi-check2-circle text-orange-500"></i> Animasi dan audio</div>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="border-t border-white/10 p-4">
+                    <button onclick="handleLogout()" class="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs font-semibold text-red-300 transition hover:bg-red-600 hover:text-white">
+                        <i class="bi bi-box-arrow-left"></i>
+                        Keluar
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="min-h-screen flex-1 md:ml-72">
+            <header class="sticky top-0 z-20 border-b border-zinc-200/80 bg-white/90 px-5 py-4 backdrop-blur md:px-8">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-orange-600">Dashboard Proyek</p>
+                        <h1 class="mt-1 text-2xl font-black tracking-tight text-zinc-950">Manajemen Dokumen Proyek</h1>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="hidden text-right sm:block">
+                            <p id="user-display-name" class="text-sm font-bold text-zinc-900">Taufiq Komara</p>
+                            <p id="user-display-role" class="text-xs text-zinc-500">Administrator</p>
+                        </div>
+                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-950 text-sm font-black text-white ring-4 ring-orange-100">TK</div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="space-y-6 p-5 md:p-8">
+                <section class="overflow-hidden rounded-3xl bg-zinc-950 text-white shadow-xl shadow-zinc-200">
+                    <div class="grid-texture grid gap-6 p-6 lg:grid-cols-[1fr_auto] lg:items-center">
+                        <div>
+                            <p class="mb-3 inline-flex rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-xs font-semibold text-orange-300">Tema Persija</p>
+                            <h2 class="max-w-2xl text-3xl font-black tracking-tight">Dashboard ringkas untuk pengelolaan dokumen, lampiran, dan tanda tangan proyek.</h2>
+                            <p class="mt-3 max-w-2xl text-sm leading-6 text-zinc-300">Seluruh fitur tugas tersedia dalam satu antarmuka: tambah data, edit, hapus, upload banyak file, export, dan tanda tangan digital.</p>
+                        </div>
+                        <button onclick="openCreateModal()" class="flex items-center justify-center gap-2 rounded-2xl bg-orange-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-orange-700">
+                            <i class="bi bi-plus-lg"></i>
+                            Tambah Proyek
+                        </button>
+                    </div>
+                </section>
+
+                <section class="grid gap-4 md:grid-cols-3">
+                    <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <p class="text-sm font-semibold text-zinc-500">Total Proyek</p>
+                            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-50 text-orange-600"><i class="bi bi-folder2-open"></i></div>
+                        </div>
+                        <p id="total-projects" class="mt-5 text-3xl font-black text-zinc-950">1</p>
+                        <p class="mt-1 text-xs text-zinc-500">Data aktif di tabel</p>
+                    </div>
+                    <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <p class="text-sm font-semibold text-zinc-500">Dokumen</p>
+                            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-700"><i class="bi bi-paperclip"></i></div>
+                        </div>
+                        <p id="total-files" class="mt-5 text-3xl font-black text-zinc-950">2</p>
+                        <p class="mt-1 text-xs text-zinc-500">Lampiran terdaftar</p>
+                    </div>
+                    <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <p class="text-sm font-semibold text-zinc-500">Status</p>
+                            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600"><i class="bi bi-shield-check"></i></div>
+                        </div>
+                        <p class="mt-5 text-3xl font-black text-zinc-950">Aktif</p>
+                        <p class="mt-1 text-xs text-zinc-500">Sistem siap digunakan</p>
+                    </div>
+                </section>
+
+                <section class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+                    <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                        <div class="flex items-start justify-between gap-4">
+                            <div>
+                                <h3 class="text-lg font-black text-zinc-950">Animasi Alur Proyek</h3>
+                                <p class="mt-1 text-sm text-zinc-500">Visualisasi sederhana proses dokumen dari input sampai pengesahan.</p>
+                            </div>
+                            <span class="rounded-full bg-orange-50 px-3 py-1 text-xs font-bold text-orange-700">CSS Animation</span>
+                        </div>
+
+                        <div class="mt-6 grid gap-4 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-center">
+                            <div class="workflow-node rounded-3xl border border-zinc-200 bg-zinc-50 p-5">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-600 text-white"><i class="bi bi-pencil-square text-xl"></i></div>
+                                <p class="mt-4 font-bold text-zinc-950">Input Data</p>
+                                <p class="mt-1 text-xs leading-5 text-zinc-500">Admin mengisi detail proyek dan kategori.</p>
+                            </div>
+                            <div class="workflow-line hidden h-1 w-16 rounded-full bg-gradient-to-r from-orange-600 via-red-500 to-orange-600 md:block"></div>
+                            <div class="workflow-node rounded-3xl border border-zinc-200 bg-zinc-50 p-5">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-950 text-white"><i class="bi bi-cloud-upload text-xl"></i></div>
+                                <p class="mt-4 font-bold text-zinc-950">Upload File</p>
+                                <p class="mt-1 text-xs leading-5 text-zinc-500">Lampiran dapat dipilih lebih dari satu file.</p>
+                            </div>
+                            <div class="workflow-line hidden h-1 w-16 rounded-full bg-gradient-to-r from-orange-600 via-red-500 to-orange-600 md:block"></div>
+                            <div class="workflow-node rounded-3xl border border-zinc-200 bg-zinc-50 p-5">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 text-white"><i class="bi bi-vector-pen text-xl"></i></div>
+                                <p class="mt-4 font-bold text-zinc-950">Pengesahan</p>
+                                <p class="mt-1 text-xs leading-5 text-zinc-500">Data disimpan setelah tanda tangan digital.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                        <div class="flex items-start justify-between gap-4">
+                            <div>
+                                <h3 class="text-lg font-black text-zinc-950">Audio Sistem</h3>
+                                <p class="mt-1 text-sm text-zinc-500">Contoh penggunaan audio untuk memenuhi fitur media.</p>
+                            </div>
+                            <span class="rounded-full bg-zinc-100 px-3 py-1 text-xs font-bold text-zinc-700">Audio</span>
+                        </div>
+
+                        <div class="mt-6 rounded-3xl bg-zinc-950 p-5 text-white">
+                            <div class="flex items-center gap-3">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-600"><i class="bi bi-volume-up-fill text-xl"></i></div>
+                                <div>
+                                    <p class="font-bold">Nada Notifikasi</p>
+                                    <p class="text-xs text-zinc-400">Audio dibuat otomatis oleh JavaScript.</p>
+                                </div>
+                            </div>
+                            <audio id="system-audio" controls class="mt-5 w-full"></audio>
+                            <button type="button" onclick="playSystemAudio()" class="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-2.5 text-sm font-bold text-zinc-950 transition hover:bg-orange-50">
+                                <i class="bi bi-play-fill"></i>
+                                Putar Audio
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-sm">
+                    <div class="flex flex-col gap-4 border-b border-zinc-100 p-5 lg:flex-row lg:items-center lg:justify-between">
+                        <div>
+                            <h3 class="text-lg font-black text-zinc-950">Data Master Proyek</h3>
+                            <p class="mt-1 text-sm text-zinc-500">Kelola data proyek beserta lampiran dan tanda tangan pengesahan.</p>
+                        </div>
+                        <div class="flex flex-col gap-2 sm:flex-row">
+                            <div class="flex items-center gap-2 rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-2">
+                                <i class="bi bi-search text-zinc-400"></i>
+                                <input id="search-input" oninput="filterTable()" type="search" placeholder="Cari proyek..." class="w-full bg-transparent text-sm outline-none placeholder:text-zinc-400 sm:w-52">
+                            </div>
+                            <button onclick="exportData('Excel')" class="flex items-center justify-center gap-2 rounded-2xl border border-zinc-200 bg-zinc-950 px-4 py-2 text-xs font-bold text-white transition hover:bg-zinc-800">
+                                <i class="bi bi-file-earmark-excel-fill text-emerald-400"></i>
+                                Excel
+                            </button>
+                            <button onclick="exportData('PDF')" class="flex items-center justify-center gap-2 rounded-2xl border border-zinc-200 bg-zinc-950 px-4 py-2 text-xs font-bold text-white transition hover:bg-zinc-800">
+                                <i class="bi bi-file-earmark-pdf-fill text-red-400"></i>
+                                PDF
+                            </button>
+                            <button onclick="openCreateModal()" class="flex items-center justify-center gap-2 rounded-2xl bg-orange-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-orange-700">
+                                <i class="bi bi-plus-circle-fill"></i>
+                                Tambah Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-[940px] text-left text-sm">
+                            <thead class="border-b border-zinc-200 bg-zinc-50 text-[11px] font-bold uppercase tracking-wide text-zinc-500">
+                                <tr>
+                                    <th class="px-6 py-4">Nama Proyek</th>
+                                    <th class="px-6 py-4">Kategori</th>
+                                    <th class="px-6 py-4">Lampiran</th>
+                                    <th class="px-6 py-4">Pengesahan</th>
+                                    <th class="px-6 py-4 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="project-table-body" class="divide-y divide-zinc-100">
+                                <tr class="transition hover:bg-zinc-50" data-category="Web Enterprise" data-file-count="2">
+                                    <td class="px-6 py-4">
+                                        <p class="font-bold text-zinc-950">Sistem Tiketing Stadion Persija</p>
+                                        <p class="mt-1 text-xs text-zinc-500">Data awal untuk simulasi dashboard</p>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-bold text-orange-700">Web Enterprise</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col gap-1 text-xs">
+                                            <span class="font-medium text-zinc-700"><i class="bi bi-file-earmark-pdf text-red-500"></i> Blueprint_Sistem.pdf</span>
+                                            <span class="font-medium text-zinc-700"><i class="bi bi-image text-blue-500"></i> ERD_Database.png</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
+                                            <i class="bi bi-check2-circle"></i>
+                                            Disahkan
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="inline-flex rounded-2xl border border-zinc-200 bg-white p-1">
+                                            <button type="button" onclick="editRow(this)" title="Edit data" class="rounded-xl px-2.5 py-2 text-amber-600 transition hover:bg-amber-50"><i class="bi bi-pencil-square"></i></button>
+                                            <button type="button" onclick="deleteRow(this)" title="Hapus data" class="rounded-xl px-2.5 py-2 text-red-600 transition hover:bg-red-50"><i class="bi bi-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <footer class="flex flex-col items-center justify-between gap-2 border-t border-zinc-200 pt-4 text-center text-xs text-zinc-500 sm:flex-row">
+                    <p>&copy; 2026 <span class="font-semibold text-zinc-800">Taufiq Komara</span>. Tugas Pemrograman Web.</p>
+                    <p class="font-semibold text-zinc-700">Tema Persija</p>
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <div id="crud-modal" class="fixed inset-0 z-40 hidden items-center justify-center bg-zinc-950/70 p-4 backdrop-blur-sm">
+        <div class="flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-2xl">
+            <div class="flex items-start justify-between border-b border-zinc-100 p-6">
+                <div>
+                    <h3 id="modal-title" class="flex items-center gap-2 text-lg font-black text-zinc-950">
+                        <i class="bi bi-folder-plus text-orange-600"></i>
+                        Form Tambah Data Proyek
+                    </h3>
+                    <p class="mt-1 text-sm text-zinc-500">Lengkapi data proyek dan tanda tangan pengesahan.</p>
+                </div>
+                <button type="button" onclick="closeModal()" class="rounded-xl p-2 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <form id="project-form" class="flex-1 space-y-5 overflow-y-auto p-6 text-sm" onsubmit="handleFormSubmit(event)">
+                <div>
+                    <label class="mb-2 block text-[11px] font-bold uppercase tracking-wide text-zinc-500">Nama Proyek</label>
+                    <input id="project-name" type="text" required placeholder="Contoh: Aplikasi Merchandise Persija" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 outline-none transition focus:border-orange-500 focus:bg-white focus:ring-4 focus:ring-orange-500/10">
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-[11px] font-bold uppercase tracking-wide text-zinc-500">Kategori Proyek</label>
+                    <select id="project-category" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 outline-none transition focus:border-orange-500 focus:bg-white focus:ring-4 focus:ring-orange-500/10">
+                        <option>Web Enterprise</option>
+                        <option>Mobile App UI/UX</option>
+                        <option>Cloud Computing</option>
+                        <option>Database System</option>
+                        <option>Company Profile</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-[11px] font-bold uppercase tracking-wide text-zinc-500">Upload Dokumen Pendukung</label>
+                    <label class="relative block cursor-pointer rounded-3xl border-2 border-dashed border-zinc-300 bg-zinc-50 p-5 text-center transition hover:border-orange-500 hover:bg-orange-50/40">
+                        <input id="multiple-files" type="file" multiple class="absolute inset-0 cursor-pointer opacity-0" onchange="updateFileList()">
+                        <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-zinc-500 shadow-sm"><i class="bi bi-cloud-arrow-up-fill text-2xl"></i></span>
+                        <span class="mt-3 block text-sm font-semibold text-zinc-700">Pilih beberapa file</span>
+                        <span class="mt-1 block text-xs text-zinc-500">PDF, gambar, atau dokumen pendukung lain.</span>
+                    </label>
+                    <div id="file-list-preview" class="mt-3 space-y-2 text-xs text-zinc-600"></div>
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-[11px] font-bold uppercase tracking-wide text-zinc-500">Tanda Tangan Digital Admin</label>
+                    <div class="overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50">
+                        <canvas id="signature-pad" class="block h-36 w-full bg-white"></canvas>
+                        <div class="flex items-center justify-between border-t border-zinc-100 bg-zinc-50 p-3 text-xs">
+                            <span class="text-zinc-500"><i class="bi bi-info-circle"></i> Tanda tangan wajib diisi sebelum data disimpan.</span>
+                            <button type="button" onclick="clearSignature()" class="rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-zinc-700 shadow-sm transition hover:bg-zinc-100">
+                                <i class="bi bi-eraser-fill"></i>
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 border-t border-zinc-100 pt-5">
+                    <button type="button" onclick="closeModal()" class="rounded-2xl border border-zinc-200 px-4 py-2.5 font-semibold text-zinc-700 transition hover:bg-zinc-50">Batal</button>
+                    <button id="submit-button" type="submit" class="rounded-2xl bg-orange-600 px-5 py-2.5 font-bold text-white shadow-lg shadow-orange-100 transition hover:bg-orange-700">Simpan Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'api/projects.php';
+        const LOGIN_URL = 'api/login.php';
+
+        let signaturePad = null;
+        let currentRow = null;
+        let currentProjectId = null;
+        let currentSignatureData = '';
+        let loggedInUser = null;
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const button = document.getElementById('login-button');
+            const buttonText = document.getElementById('login-button-text');
+            const message = document.getElementById('login-message');
+            const formData = new FormData();
+
+            formData.append('email', document.getElementById('login-email').value.trim());
+            formData.append('password', document.getElementById('login-password').value);
+
+            message.classList.add('hidden');
+            button.disabled = true;
+            button.classList.add('opacity-70', 'cursor-not-allowed');
+            buttonText.textContent = 'Memeriksa...';
+
+            try {
+                const response = await fetch(LOGIN_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.message || 'Login gagal.');
+                }
+
+                loggedInUser = result.user;
+                document.getElementById('user-display-name').textContent = loggedInUser.name;
+                document.getElementById('user-display-role').textContent = loggedInUser.role;
+                document.getElementById('login-page').classList.add('hidden');
+                document.getElementById('main-dashboard').classList.remove('hidden');
+                await loadProjects();
+            } catch (error) {
+                message.textContent = error.message || 'Login gagal. Pastikan database sudah di-import.';
+                message.classList.remove('hidden');
+            } finally {
+                button.disabled = false;
+                button.classList.remove('opacity-70', 'cursor-not-allowed');
+                buttonText.textContent = 'Masuk';
+            }
+        }
+
+        function handleLogout() {
+            closeModal();
+            loggedInUser = null;
+            document.getElementById('main-dashboard').classList.add('hidden');
+            document.getElementById('main-dashboard').classList.remove('flex');
+            document.getElementById('login-page').classList.remove('hidden');
+        }
+
+        async function loadProjects() {
+            try {
+                const response = await fetch(API_URL);
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.message || 'Data proyek gagal dimuat.');
+                }
+
+                renderProjects(result.data);
+                refreshSummary();
+                filterTable();
+            } catch (error) {
+                console.error(error);
+                alert('Data belum tersambung ke database. Jalankan lewat Laragon dan import database.sql di phpMyAdmin.');
+                refreshSummary();
+            }
+        }
+
+        function renderProjects(projects) {
+            const tbody = document.getElementById('project-table-body');
+
+            if (!projects.length) {
+                tbody.innerHTML = `
+                    <tr data-empty="true">
+                        <td colspan="5" class="px-6 py-10 text-center text-sm text-zinc-500">
+                            Belum ada data proyek. Klik tombol Tambah Data untuk membuat data pertama.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = projects.map((project) => `
+                <tr class="transition hover:bg-zinc-50" data-id="${project.id}" data-category="${escapeHTML(project.category)}" data-signature="${escapeHTML(project.signature_data)}" data-file-count="${project.files.length}">
+                    <td class="px-6 py-4">${projectCellHTML(project.name)}</td>
+                    <td class="px-6 py-4">${categoryBadge(project.category)}</td>
+                    <td class="px-6 py-4">${buildStoredFileListHTML(project.files)}</td>
+                    <td class="px-6 py-4">${signatureStatusHTML()}</td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="inline-flex rounded-2xl border border-zinc-200 bg-white p-1">
+                            <button type="button" onclick="editRow(this)" title="Edit data" class="rounded-xl px-2.5 py-2 text-amber-600 transition hover:bg-amber-50"><i class="bi bi-pencil-square"></i></button>
+                            <button type="button" onclick="deleteRow(this)" title="Hapus data" class="rounded-xl px-2.5 py-2 text-red-600 transition hover:bg-red-50"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function initSignaturePad() {
+            const canvas = document.getElementById('signature-pad');
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            const rect = canvas.getBoundingClientRect();
+
+            canvas.width = rect.width * ratio;
+            canvas.height = rect.height * ratio;
+            canvas.getContext('2d').scale(ratio, ratio);
+
+            signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgb(255, 255, 255)',
+                penColor: 'rgb(240, 75, 22)',
+                minWidth: 1.1,
+                maxWidth: 2.7
+            });
+
+            if (currentSignatureData) {
+                signaturePad.fromDataURL(currentSignatureData);
+            }
+        }
+
+        function openCreateModal() {
+            currentRow = null;
+            currentProjectId = null;
+            currentSignatureData = '';
+            document.getElementById('project-form').reset();
+            document.getElementById('file-list-preview').innerHTML = '';
+            document.getElementById('modal-title').innerHTML = '<i class="bi bi-folder-plus text-orange-600"></i> Form Tambah Data Proyek';
+            document.getElementById('submit-button').textContent = 'Simpan Data';
+            toggleModal(true);
+        }
+
+        function toggleModal(show) {
+            const modal = document.getElementById('crud-modal');
+            modal.classList.toggle('hidden', !show);
+            modal.classList.toggle('flex', show);
+
+            if (show) {
+                setTimeout(initSignaturePad, 60);
+            }
+        }
+
+        function closeModal() {
+            toggleModal(false);
+            currentRow = null;
+            currentProjectId = null;
+            currentSignatureData = '';
+        }
+
+        function updateFileList() {
+            const input = document.getElementById('multiple-files');
+            const preview = document.getElementById('file-list-preview');
+            preview.innerHTML = '';
+
+            if (!input.files.length) {
+                return;
+            }
+
+            const title = document.createElement('p');
+            title.className = 'font-bold text-zinc-800';
+            title.textContent = `Berkas terpilih (${input.files.length})`;
+            preview.appendChild(title);
+
+            Array.from(input.files).forEach((file) => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center gap-2 rounded-2xl border border-orange-100 bg-orange-50 px-3 py-2 font-medium text-orange-800';
+                item.innerHTML = `<i class="bi bi-file-earmark-check-fill text-orange-600"></i> ${escapeHTML(file.name)}`;
+                preview.appendChild(item);
+            });
+        }
+
+        function clearSignature() {
+            currentSignatureData = '';
+            if (signaturePad) {
+                signaturePad.clear();
+            }
+        }
+
+        function exportData(type) {
+            const rows = collectTableData();
+
+            if (!rows.length) {
+                alert('Tidak ada data untuk diekspor.');
+                return;
+            }
+
+            if (type === 'Excel') {
+                const csv = convertRowsToCSV(rows);
+                downloadFile('data-proyek-taufiq-komara.csv', csv, 'text/csv;charset=utf-8;');
+                alert('Data berhasil dikonversi ke CSV dan dapat dibuka melalui Excel.');
+                return;
+            }
+
+            const printWindow = window.open('', '_blank');
+            if (!printWindow) {
+                alert('Popup browser diblokir. Izinkan popup untuk mencetak laporan PDF.');
+                return;
+            }
+            const tableRows = rows.map((row, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${escapeHTML(row.nama)}</td>
+                    <td>${escapeHTML(row.kategori)}</td>
+                    <td>${escapeHTML(row.lampiran)}</td>
+                    <td>${escapeHTML(row.status)}</td>
+                </tr>
+            `).join('');
+
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="id">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Laporan Data Proyek</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; color: #18181b; margin: 32px; }
+                        h1 { margin: 0 0 6px; font-size: 22px; }
+                        p { margin: 0 0 20px; color: #52525b; font-size: 13px; }
+                        table { border-collapse: collapse; width: 100%; font-size: 12px; }
+                        th, td { border: 1px solid #d4d4d8; padding: 10px; text-align: left; vertical-align: top; }
+                        th { background: #111113; color: white; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Laporan Data Proyek</h1>
+                    <p>Taufiq Komara - Manajemen Dokumen Proyek</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Proyek</th>
+                                <th>Kategori</th>
+                                <th>Lampiran</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>${tableRows}</tbody>
+                    </table>
+                    <script>
+                        window.onload = () => {
+                            window.print();
+                        };
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        function editRow(button) {
+            currentRow = button.closest('tr');
+            currentProjectId = currentRow.dataset.id;
+            currentSignatureData = currentRow.dataset.signature || '';
+
+            document.getElementById('project-name').value = currentRow.cells[0].querySelector('p') ? currentRow.cells[0].querySelector('p').innerText.trim() : currentRow.cells[0].innerText.trim();
+            document.getElementById('project-category').value = currentRow.dataset.category || currentRow.cells[1].innerText.trim();
+            document.getElementById('file-list-preview').innerHTML = '<p class="text-xs font-medium text-zinc-500">Upload file baru jika ingin menambah lampiran.</p>';
+            document.getElementById('modal-title').innerHTML = '<i class="bi bi-pencil-square text-orange-600"></i> Form Edit Data Proyek';
+            document.getElementById('submit-button').textContent = 'Update Data';
+            toggleModal(true);
+        }
+
+        async function deleteRow(button) {
+            const row = button.closest('tr');
+            const id = row.dataset.id;
+
+            if (!id || !confirm('Hapus data ini?')) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('_method', 'DELETE');
+            formData.append('id', id);
+
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            if (!result.success) {
+                alert(result.message || 'Data gagal dihapus.');
+                return;
+            }
+
+            await loadProjects();
+            alert('Data berhasil dihapus.');
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+
+            if (!signaturePad || signaturePad.isEmpty()) {
+                alert('Tanda tangan pengesahan wajib diisi.');
+                return;
+            }
+
+            const form = event.target;
+            const filesInput = document.getElementById('multiple-files');
+            const formData = new FormData();
+            formData.append('name', document.getElementById('project-name').value.trim());
+            formData.append('category', document.getElementById('project-category').value);
+            formData.append('signature_data', signaturePad.toDataURL());
+
+            if (currentProjectId) {
+                formData.append('id', currentProjectId);
+            }
+
+            Array.from(filesInput.files).forEach((file) => {
+                formData.append('files[]', file);
+            });
+
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            if (!result.success) {
+                alert(result.message || 'Data gagal disimpan.');
+                return;
+            }
+
+            form.reset();
+            document.getElementById('file-list-preview').innerHTML = '';
+            clearSignature();
+            closeModal();
+            await loadProjects();
+            alert(result.message);
+        }
+
+        function buildStoredFileListHTML(files) {
+            let html = '<div class="flex flex-col gap-1 text-xs">';
+
+            if (files.length) {
+                files.forEach((file) => {
+                    html += `<a href="${escapeHTML(file.file_path)}" target="_blank" class="font-medium text-zinc-700 hover:text-orange-600 hover:underline"><i class="bi bi-file-earmark-text text-orange-600"></i> ${escapeHTML(file.original_name)}</a>`;
+                });
+            } else {
+                html += '<span class="text-zinc-400">Tidak ada lampiran</span>';
+            }
+
+            return `${html}</div>`;
+        }
+
+        function categoryBadge(category) {
+            return `<span class="rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-bold text-orange-700">${escapeHTML(category)}</span>`;
+        }
+
+        function signatureStatusHTML() {
+            return `
+                <span class="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
+                    <i class="bi bi-check2-circle"></i>
+                    Disahkan
+                </span>
+            `;
+        }
+
+        function projectCellHTML(name) {
+            return `
+                <p class="font-bold text-zinc-950">${escapeHTML(name)}</p>
+                <p class="mt-1 text-xs text-zinc-500">Tersimpan di database MySQL</p>
+            `;
+        }
+
+        function filterTable() {
+            const keyword = document.getElementById('search-input')?.value.toLowerCase() || '';
+            document.querySelectorAll('#project-table-body tr').forEach((row) => {
+                if (row.dataset.empty === 'true') {
+                    return;
+                }
+                row.classList.toggle('hidden', !row.innerText.toLowerCase().includes(keyword));
+            });
+        }
+
+        function collectTableData() {
+            return Array.from(document.querySelectorAll('#project-table-body tr'))
+                .filter((row) => row.dataset.empty !== 'true')
+                .map((row) => ({
+                    nama: row.cells[0].querySelector('p') ? row.cells[0].querySelector('p').innerText.trim() : row.cells[0].innerText.trim(),
+                    kategori: row.dataset.category || row.cells[1].innerText.trim(),
+                    lampiran: row.cells[2].innerText.trim().replace(/\s+/g, ', '),
+                    status: row.cells[3].innerText.trim()
+                }));
+        }
+
+        function convertRowsToCSV(rows) {
+            const header = ['Nama Proyek', 'Kategori', 'Lampiran', 'Status'];
+            const body = rows.map((row) => [row.nama, row.kategori, row.lampiran, row.status]);
+            return [header, ...body].map((columns) => columns.map(formatCSVValue).join(',')).join('\n');
+        }
+
+        function formatCSVValue(value) {
+            return `"${String(value).replace(/"/g, '""')}"`;
+        }
+
+        function downloadFile(filename, content, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        function refreshSummary() {
+            const rows = Array.from(document.querySelectorAll('#project-table-body tr')).filter((row) => row.dataset.empty !== 'true');
+            const fileCount = rows.reduce((total, row) => total + Number(row.dataset.fileCount || 0), 0);
+            document.getElementById('total-projects').textContent = rows.length;
+            document.getElementById('total-files').textContent = fileCount;
+        }
+
+        function initializeAudio() {
+            const sampleRate = 8000;
+            const duration = 0.8;
+            const samples = Math.floor(sampleRate * duration);
+            const dataSize = samples * 2;
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            for (let i = 0; i < samples; i++) {
+                const t = i / sampleRate;
+                const envelope = Math.max(0, 1 - t / duration);
+                const wave = Math.sin(2 * Math.PI * 440 * t) * 0.45 + Math.sin(2 * Math.PI * 660 * t) * 0.18;
+                view.setInt16(44 + i * 2, wave * envelope * 32767, true);
+            }
+
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            bytes.forEach((byte) => {
+                binary += String.fromCharCode(byte);
+            });
+
+            document.getElementById('system-audio').src = `data:audio/wav;base64,${btoa(binary)}`;
+        }
+
+        function writeString(view, offset, value) {
+            for (let i = 0; i < value.length; i++) {
+                view.setUint8(offset + i, value.charCodeAt(i));
+            }
+        }
+
+        function playSystemAudio() {
+            const audio = document.getElementById('system-audio');
+            audio.currentTime = 0;
+            audio.play();
+        }
+
+        function escapeHTML(value) {
+            return String(value).replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            }[char]));
+        }
+
+        window.addEventListener('resize', () => {
+            if (!document.getElementById('crud-modal').classList.contains('hidden')) {
+                currentSignatureData = signaturePad && !signaturePad.isEmpty() ? signaturePad.toDataURL() : currentSignatureData;
+                initSignaturePad();
+            }
+        });
+
+        refreshSummary();
+        initializeAudio();
+    </script>
+</body>
+</html>
